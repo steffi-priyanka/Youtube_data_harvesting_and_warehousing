@@ -21,15 +21,20 @@ pip install streamlit
 
 REQUIREMENTS :
 
-python 3.11
+Python 3.11
+
 google-api-python-client==2.115.0
+
 pymongo==4.6.1
+
 pandas==2.1.0
+
 mysql-connector-python==8.3.0
+
 streamlit==1.30.0
 
 
-WORK FLOW and EXECUTION:
+WORKFLOW and EXECUTION:
 
 1. Retrieve data from the YouTube API, including channel information, playlists, videos, and comments.
 2. Store the retrieved data in a MongoDB database.
