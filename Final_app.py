@@ -397,16 +397,20 @@ def show_comment_table():
 #_____________________ STREAMLIT_CODE ___________________________________________________
 
 with st.sidebar:
-    st.title(":red[YOUTUBE DATA HARVESTING AND WAREHOUSING]")
+    st.divider()
+    st.title(":green[YOUTUBE DATA HARVESTING AND WAREHOUSING]")
+    st.divider()
     st.caption("Retrieving youtube channel data from Google API")
     st.caption("Storing it in MONGODB as data lake")
     st.caption("Transforming data into SQL database")
     st.caption("Querying the data")
     st.caption("Displaying in streamlit app")
+    st.divider()
 #______________________________________________________________________________
-channel_id = st.text_input("Enter channel_id")
+st.markdown(':blue[**Enter a youtube channel_id**]')
+channel_id = st.text_input('channel_id')
 
-if st.button("collect and store data"):  #stores at MONGODB
+if st.button("1.Collect data from youtube and store it in MongoDB"):  #stores at MONGODB
     chan_id=[]
     db=client["youtube_data"]
     collection1=db["channel_details"]
@@ -420,11 +424,13 @@ if st.button("collect and store data"):  #stores at MONGODB
         st.success(insert)
 #_____________________________________________________________________________________
 
-if st.button("migrate to sql"):
+if st.button("2.Migrate data from MongoDB to MySQL"):
     Table=tables()
     st.success(Table)
 
-show_table = st.radio("SELECT TABLE to VIEW",("CHANNELS","VIDEOS","COMMENTS"))
+st.divider()
+st.markdown(':blue[**Select a table below to view data**]')
+show_table = st.radio('Table name',("CHANNELS","VIDEOS","COMMENTS"))
 
 if show_table =="CHANNELS":
     show_channel_table()
@@ -434,12 +440,12 @@ elif show_table =="VIDEOS":
 
 elif show_table =="COMMENTS":
     show_comment_table()
-
+st.divider()
 ########## SQL CONNECTION #####################
-
+st.markdown(':blue[**Select a question to visualize data**]')
 cursor = mydb.cursor()
 
-question = st.selectbox("*****    SELECT QUESTION TO VIEW    ******",
+question = st.selectbox("Question",
                         ("1.All the videos and their corresponding channels?",
                          "2.Channels with most number of videos, and how many?",
                          "3.Top 10 most viewed videos and their channels?",
@@ -449,7 +455,8 @@ question = st.selectbox("*****    SELECT QUESTION TO VIEW    ******",
                          "7.Number of views for each channel, and their channel names?",
                          "8.Channels that have published videos in the year 2022",
                          "9.Average duration of all videos in each channel, and their channel names?",
-                         "10.Videos with highest comments, and their channel names?"))
+                         "10.Videos with highest comments, and their channel names?"),
+                        index=None, placeholder="Select your question")
 
 #_______________________ QUESTIONS  ______________________________
 
@@ -479,7 +486,8 @@ elif question == '3.Top 10 most viewed videos and their channels?':
 
 elif question == '4.Comments in each video, and their corresponding video names?':
     cursor.execute('''SELECT Comment_count ,video_name
-                       FROM videos where Comment_count is not null ''')
+                       FROM videos where Comment_count is not null
+                       ORDER BY Comment_count desc''')
 
     t4 = cursor.fetchall()
     df4 = pd.DataFrame(t4, columns=["NO OF COMMENTS", "VIDEO_TITLE"])
@@ -503,7 +511,8 @@ elif question == '6.Number of likes for each video, and their video names?':
 
 elif question == '7.Number of views for each channel, and their channel names?':
     cursor.execute('''SELECT channel_name ,channel_views
-                       FROM channels''')
+                       FROM channels
+                       ORDER BY channel_views desc''')
 
     t7 = cursor.fetchall()
     df7 = pd.DataFrame(t7, columns=["CHANNEL_NAME", "TOTAL_VIEWS"])
