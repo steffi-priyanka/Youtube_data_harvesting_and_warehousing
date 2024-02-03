@@ -136,7 +136,7 @@ def channel_details(channel_id):
     collection1.insert_one({"channel_info": ch_details,
                             "video_info": vi_details,
                             "comment_info": comm_details})
-    return "upload Successful"
+    return "Youtube Data uploaded to MONGODB successfully"
 
 #______________________CHANNEL TABLE CREATION USING SQL ____________________________________
 def channel_table():
@@ -357,7 +357,7 @@ def tables():
     channel_table()
     video_table()
     comment_table()
-    return "Tables created successfully"
+    return "Data transferred to MySQL successfully"
 
 # ___________________________ STREAMLIT_DATAFRAME _______________________________
 
@@ -396,39 +396,35 @@ def show_comment_table():
 
 #_____________________ STREAMLIT_CODE ___________________________________________________
 
+st.subheader(":green[Youtube Data Harvesting and Warehousing]")
+
 with st.sidebar:
     st.divider()
-    st.title(":green[YOUTUBE DATA HARVESTING AND WAREHOUSING]")
+    st.markdown(':blue[**Enter a youtube channel_id**]')
+    channel_id = st.text_input('Channel_id')
+    # ______________________________________________________________________________
+    if st.button("1.Collect data from youtube and store it in MongoDB"):  # stores at MONGODB
+        chan_id = []
+        db = client["youtube_data"]
+        collection1 = db["channel_details"]
+
+        for ch_data in collection1.find({}, {"_id": 0, "channel_info": 1}):
+            chan_id.append(ch_data["channel_info"]["channel_id"])
+        if channel_id in chan_id:
+            st.success("Channel Already Exist")
+        else:
+            insert = channel_details(channel_id)
+            st.success(insert)
+
+    if st.button("2.Migrate data from MongoDB to MySQL"):
+        Table=tables()
+        st.success(Table)
+
     st.divider()
-    st.caption("Retrieving youtube channel data from Google API")
-    st.caption("Storing it in MONGODB as data lake")
-    st.caption("Transforming data into SQL database")
-    st.caption("Querying the data")
-    st.caption("Displaying in streamlit app")
-    st.divider()
-#______________________________________________________________________________
-st.markdown(':blue[**Enter a youtube channel_id**]')
-channel_id = st.text_input('channel_id')
+    st.link_button( "Linkedin SteffiPriyanka","https://www.linkedin.com/in/dr-steffipriyanka")
 
-if st.button("1.Collect data from youtube and store it in MongoDB"):  #stores at MONGODB
-    chan_id=[]
-    db=client["youtube_data"]
-    collection1=db["channel_details"]
+#________________________________________________________________________
 
-    for ch_data in collection1.find({},{"_id":0,"channel_info":1}):
-        chan_id.append(ch_data["channel_info"]["channel_id"])
-    if channel_id in chan_id:
-        st.success("Channel Already Exist")
-    else:
-        insert=channel_details(channel_id)
-        st.success(insert)
-#_____________________________________________________________________________________
-
-if st.button("2.Migrate data from MongoDB to MySQL"):
-    Table=tables()
-    st.success(Table)
-
-st.divider()
 st.markdown(':blue[**Select a table below to view data**]')
 show_table = st.radio('Table name',("CHANNELS","VIDEOS","COMMENTS"))
 
